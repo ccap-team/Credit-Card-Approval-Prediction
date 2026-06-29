@@ -1,14 +1,20 @@
-
 # Dataset
 
-Dataset Name: Credit Card Fraud Detection Dataset
+**Dataset Name:** Credit Card Approval Prediction Dataset
 
-Source:
-https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
+**Source:**
 
-The dataset is not included in this repository because it exceeds GitHub's web upload size limit.
+**Credit Record Dataset:**
+https://www.kaggle.com/code/m0hand/credit-card-approval-prediction/input?select=credit_record.csv
 
-To use this project:
-1. Download the dataset from the Kaggle link above.
-2. Extract the ZIP file.
-3. Place `creditcard.csv` inside the Dataset folder.
+**Application Record Dataset:**
+https://www.kaggle.com/code/m0hand/credit-card-approval-prediction/input?select=application_record.csv
+
+**Description:**
+
+The project uses the Credit Card Approval Prediction dataset, which consists of two CSV files:
+
+* **application_record.csv** – Contains applicant demographic and financial information such as gender, income, occupation, education, family status, housing, and employment details.
+* **credit_record.csv** – Contains historical credit payment records for each applicant. These records are merged with the application data to prepare the final dataset used for analysis and model building.
+
+The two datasets are linked using the applicant **ID** field and are combined during the data preprocessing stage.
