@@ -1,81 +1,124 @@
 from flask import Flask, render_template, request
 import pickle
-import numpy as np
-import os
+import pandas as pd
 
 app = Flask(__name__)
 
-# -------------------------------
-# Load trained model if available
-# -------------------------------
-model = None
+# =====================================================
+# Load Trained Model
+# =====================================================
 
-if os.path.exists("model.pkl"):
-    with open("model.pkl", "rb") as f:
-        model = pickle.load(f)
+with open("Models/model.pkl", "rb") as f:
+    model = pickle.load(f)
+
+with open("Models/label_encoders.pkl", "rb") as f:
+    label_encoders = pickle.load(f)
+
+with open("Models/feature_names.pkl", "rb") as f:
+    feature_names = pickle.load(f)
 
 
-# -------------------------------
+# =====================================================
 # Home Page
-# -------------------------------
+# =====================================================
+
 @app.route("/")
 def home():
     return render_template("home.html")
 
 
-# -------------------------------
-# Prediction Form
-# -------------------------------
+# =====================================================
+# Prediction Page
+# =====================================================
+
 @app.route("/predict")
 def predict_page():
     return render_template("index.html")
 
 
-# -------------------------------
+# =====================================================
 # Prediction
-# -------------------------------
+# =====================================================
+
 @app.route("/result", methods=["POST"])
 def predict():
 
     try:
 
-        income = float(request.form["income"])
-        age = float(request.form["age"])
-        family = float(request.form["family"])
+        data = {}
 
-        # Dummy feature vector
-        features = np.array([[income, age, family]])
+        # --------------------------------------------
+        # Read every feature expected by the model
+        # --------------------------------------------
 
-        # If trained model exists
-        if model is not None:
+        for feature in feature_names:
 
-            prediction = model.predict(features)[0]
+            value = request.form.get(feature)
 
-            if prediction == 1:
-                result = "Credit Card Approved"
+            if value is None or value == "":
+                value = 0
+
+            # Encode categorical values
+            if feature in label_encoders:
+
+                encoder = label_encoders[feature]
+
+                if value not in encoder.classes_:
+                    value = encoder.classes_[0]
+
+                value = encoder.transform([value])[0]
+
             else:
-                result = "Credit Card Rejected"
+                value = float(value)
 
+            data[feature] = value
+
+        # --------------------------------------------
+        # Create DataFrame in training order
+        # --------------------------------------------
+
+        input_df = pd.DataFrame(
+            [[data[col] for col in feature_names]],
+            columns=feature_names
+        )
+
+        # --------------------------------------------
+        # Prediction
+        # --------------------------------------------
+
+        prediction = model.predict(input_df)[0]
+
+        probability = model.predict_proba(input_df)[0]
+
+        approval_probability = round(probability[1] * 100, 2)
+
+        rejection_probability = round(probability[0] * 100, 2)
+
+        if prediction == 1:
+            result = "Approved"
+            confidence = approval_probability
         else:
+            result = "Rejected"
+            confidence = rejection_probability
 
-            # Demo prediction
-            if income > 300000:
-                result = "Credit Card Approved"
-            else:
-                result = "Credit Card Rejected"
-
-    except Exception:
-
-        result = "Invalid Input"
+    except Exception as e:
+        result = "Error"
+        confidence = 0
+        approval_probability = 0
+        rejection_probability = 0
 
     return render_template(
         "result.html",
-        prediction=result
+        prediction=result,
+        confidence=confidence,
+        approval_probability=approval_probability,
+        rejection_probability=rejection_probability
     )
 
 
-# -------------------------------
-# Run Flask
-# -------------------------------
+# =====================================================
+# Run Application
+# =====================================================
+
 if __name__ == "__main__":
     app.run(debug=True)
