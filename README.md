@@ -1,6 +1,6 @@
 ## 🌐 Live Demo
 
-**Demo:** https://<your-huggingface-space-url>
+**Demo:** https://<https://huggingface.co/spaces/arunkapse/credit-card-approval-prediction>
 
 
 # 💳 Credit Card Approval Prediction
