@@ -1,34 +1,121 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
-
-<title>Prediction Result</title>
-
-<link rel="stylesheet" href="/static/style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-<div class="container">
+    <!-- Top Header -->
+    <header class="top-bar">
+        <div class="logo">
+            SmartBridge
+        </div>
+    </header>
 
-<h2>Prediction Result</h2>
+    <div class="container">
 
-<h1>{{ prediction }}</h1>
+        <div class="card result-card">
 
-<a href="/">
+            <h1>Credit Card Approval Prediction</h1>
 
-<button>
+            {% if prediction == "Approved" %}
 
-Go Home
+            <div class="success-box">
+                <h2>✅ Credit Card Approved</h2>
 
-</button>
+                <p>
+                    Congratulations! Based on the applicant information,
+                    the Machine Learning model predicts that this
+                    credit card application is likely to be approved.
+                </p>
 
-</a>
+                <br>
 
-</div>
+                <h3>
+                    Approval Confidence
+                </h3>
+
+                <div class="progress-bar">
+                    <div class="progress success-progress" style="width: {{ approval_probability }}%;">
+                        {{ approval_probability }}%
+                    </div>
+                </div>
+            </div>
+
+            {% elif prediction == "Rejected" %}
+
+            <div class="danger-box">
+                <h2>❌ Credit Card Rejected</h2>
+
+                <p>
+                    Based on the applicant information,
+                    the Machine Learning model predicts that
+                    this application is likely to be rejected.
+                </p>
+
+                <br>
+
+                <h3>
+                    Rejection Confidence
+                </h3>
+
+                <div class="progress-bar">
+                    <div class="progress danger-progress" style="width: {{ rejection_probability }}%;">
+                        {{ rejection_probability }}%
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+
+            <div class="danger-box">
+                <h2>⚠️ Prediction Failed</h2>
+
+                <p>
+                    Something went wrong while processing the prediction.
+                    Please verify the entered values and try again.
+                </p>
+            </div>
+
+            {% endif %}
+
+            <br>
+
+            <table class="summary-table">
+                <tr>
+                    <td><strong>Prediction</strong></td>
+                    <td class="prediction-value">{{ prediction }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Model Confidence</strong></td>
+                    <td>{{ confidence }}%</td>
+                </tr>
+            </table>
+
+            <br>
+
+            <div class="button-area">
+                <a href="{{ url_for('predict_page') }}" class="btn">
+                    Predict Again
+                </a>
+            </div>
+
+            <br>
+
+            <div class="button-area" style="padding-top: 0;">
+                <a href="{{ url_for('home') }}" class="btn secondary">
+                    Back to Home
+                </a>
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
 
