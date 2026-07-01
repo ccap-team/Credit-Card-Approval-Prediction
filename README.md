@@ -1,3 +1,8 @@
+## 🌐 Live Demo
+
+**Demo:** https://<your-huggingface-space-url>
+
+
 # 💳 Credit Card Approval Prediction
 
 A Machine Learning-based web application that predicts whether a credit card application is likely to be **Approved** or **Rejected** based on applicant information. The project demonstrates the complete machine learning workflow, from data preprocessing and model training to deployment using Flask.
